@@ -29,7 +29,7 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
-GIT_REPO = os.environ.get("ALPHAFX_GIT_REPO", "https://github.com/sudofaizan/alphafx-live.git")
+GIT_REPO = os.environ.get("ALPHAFX_GIT_REPO", "https://github.com/sudofaizan/Alphafxmt5api.git")
 GIT_BRANCH = os.environ.get("ALPHAFX_GIT_BRANCH", "main")
 GIT_FILE = os.environ.get("ALPHAFX_GIT_FILE", "server.py")
 UPDATE_MODE = os.environ.get("ALPHAFX_UPDATE_MODE", "git").strip().lower()
