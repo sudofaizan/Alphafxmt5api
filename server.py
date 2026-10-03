@@ -376,26 +376,45 @@ def result_to_dict(r) -> dict[str, Any] | None:
     }
 
 
-_DEAL_TYPE_LABELS = {
-    mt5.DEAL_TYPE_BUY: "buy",
-    mt5.DEAL_TYPE_SELL: "sell",
-    mt5.DEAL_TYPE_BALANCE: "balance",
-    mt5.DEAL_TYPE_CREDIT: "credit",
-    mt5.DEAL_TYPE_CHARGE: "charge",
-    mt5.DEAL_TYPE_CORRECTION: "correction",
-    mt5.DEAL_TYPE_BONUS: "bonus",
-    mt5.DEAL_TYPE_COMMISSION: "commission",
-    mt5.DEAL_TYPE_COMMISSION_DAILY: "commission_daily",
-    mt5.DEAL_TYPE_COMMISSION_MONTHLY: "commission_monthly",
-    mt5.DEAL_TYPE_COMMISSION_AGENT_DAILY: "commission_agent_daily",
-    mt5.DEAL_TYPE_COMMISSION_AGENT_MONTHLY: "commission_agent_monthly",
-    mt5.DEAL_TYPE_INTEREST: "interest",
-    mt5.DEAL_TYPE_BUY_CANCELED: "buy_canceled",
-    mt5.DEAL_TYPE_SELL_CANCELED: "sell_canceled",
-    mt5.DEAL_TYPE_DIVIDEND: "dividend",
-    mt5.DEAL_TYPE_DIVIDEND_FRANKED: "dividend_franked",
-    mt5.DEAL_TYPE_TAX: "tax",
-}
+def _mt5_deal_const(*names: str) -> int | None:
+    """Resolve deal enum across MetaTrader5 package versions (DEAL_TYPE_* vs DEAL_*)."""
+    for name in names:
+        val = getattr(mt5, name, None)
+        if val is not None:
+            return int(val)
+    return None
+
+
+def _build_deal_type_labels() -> dict[int, str]:
+    specs: list[tuple[tuple[str, ...], str]] = [
+        (("DEAL_TYPE_BUY",), "buy"),
+        (("DEAL_TYPE_SELL",), "sell"),
+        (("DEAL_TYPE_BALANCE",), "balance"),
+        (("DEAL_TYPE_CREDIT",), "credit"),
+        (("DEAL_TYPE_CHARGE",), "charge"),
+        (("DEAL_TYPE_CORRECTION",), "correction"),
+        (("DEAL_TYPE_BONUS",), "bonus"),
+        (("DEAL_TYPE_COMMISSION",), "commission"),
+        (("DEAL_TYPE_COMMISSION_DAILY",), "commission_daily"),
+        (("DEAL_TYPE_COMMISSION_MONTHLY",), "commission_monthly"),
+        (("DEAL_TYPE_COMMISSION_AGENT_DAILY",), "commission_agent_daily"),
+        (("DEAL_TYPE_COMMISSION_AGENT_MONTHLY",), "commission_agent_monthly"),
+        (("DEAL_TYPE_INTEREST",), "interest"),
+        (("DEAL_TYPE_BUY_CANCELED",), "buy_canceled"),
+        (("DEAL_TYPE_SELL_CANCELED",), "sell_canceled"),
+        (("DEAL_TYPE_DIVIDEND", "DEAL_DIVIDEND"), "dividend"),
+        (("DEAL_TYPE_DIVIDEND_FRANKED", "DEAL_DIVIDEND_FRANKED"), "dividend_franked"),
+        (("DEAL_TYPE_TAX", "DEAL_TAX"), "tax"),
+    ]
+    labels: dict[int, str] = {}
+    for names, label in specs:
+        code = _mt5_deal_const(*names)
+        if code is not None:
+            labels[code] = label
+    return labels
+
+
+_DEAL_TYPE_LABELS = _build_deal_type_labels()
 
 _DEAL_ENTRY_LABELS = {
     mt5.DEAL_ENTRY_IN: "in",
